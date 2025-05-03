@@ -1,0 +1,670 @@
+//Code.h
+
+#ifndef PROJECT_ALGO_H
+#define PROJECT_ALGO_H
+
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+
+#define MAX_ROWS 5
+#define MAX_COLS 5
+
+double nbComp = 0; //Number of comparisons
+double nbPerm = 0; //Number of permutations
+
+//defining a list:
+typedef struct Node
+{
+char word[100];
+struct Node* next;
+} Node;
+
+//Function to create a list:
+Node* createNode(const char* word)
+{
+Node* newNode = (Node*)malloc(sizeof(Node));
+strcpy(newNode->word, word);
+newNode->next = NULL;
+return newNode;
+}
+
+//Function to insert at the end of a list:
+void insertEnd(Node** head, const char* word)
+{
+
+Node* newNode = createNode(word);
+if (*head == NULL)
+{
+*head = newNode;
+return;
+}
+Node* temp = *head;
+while (temp->next != NULL)
+{
+temp = temp->next;
+}
+temp->next = newNode;
+}
+
+//Function to display an array of integers:
+void displayArray(int arr[], int size)
+{
+for (int i = 0; i < size; i++)
+{
+printf("%d ", arr[i]);
+}
+printf("\n");
+}
+
+//Function to display a matrix:
+void displayMatrix(char matrix[MAX_ROWS][MAX_COLS], int rows)
+{
+for (int i = 0; i < rows; i++)
+{
+printf("%s\n", matrix[i]);
+}
+printf("\n");
+}
+
+//Function to display a list:
+void displayList(Node* head)
+{
+Node* temp = head;
+while (temp != NULL)
+{
+printf("%s ", temp->word);
+temp = temp->next;
+}
+printf("\n");
+}
+
+//Selection Sort Function:
+void selectionSort(int arr[], int size)
+{
+
+for (int i = 0; i < size - 1; i++)
+{
+int minIndex = i;
+for (int j = i + 1; j < size; j++)
+{
+nbComp++; //Increment comparison count
+if (arr[j] < arr[minIndex])
+{
+minIndex = j;
+}
+}
+
+//Swap the found minimum element with the first element
+if (minIndex != i)
+{
+int temp = arr[i];
+arr[i] = arr[minIndex];
+
+arr[minIndex] = temp;
+nbPerm++; //Increment permutation count
+}
+//Display the current state of the array
+printf("Iteration %d: ", i+1);
+displayArray(arr, size);
+}
+}
+
+//Bubble Sort Function:
+void bubbleSort(int arr[], int size)
+{
+int swapped;
+
+for (int i = 0; i < size - 1; i++)
+{
+swapped = 0; //Reset swapped flag for each iteration
+
+for (int j = 0; j < size - i - 1; j++)
+{
+nbComp++; //Increment comparison count
+if (arr[j] > arr[j + 1])
+{
+//Swap arr[j] and arr[j + 1]
+int temp = arr[j];
+arr[j] = arr[j + 1];
+arr[j + 1] = temp;
+nbPerm++; //Increment permutation count
+swapped = 1; //Set swapped flag
+}
+}
+//Display the current state of the array
+
+printf("Iteration %d: ", i + 1);
+
+displayArray(arr, size);
+
+//If no two elements were swapped, the array is sorted
+if (swapped == 0)
+{
+break;
+}
+}
+}
+
+//Insertion Sort Function:
+void insertionSort(int arr[], int size)
+{
+for (int i = 1; i < size; i++)
+{
+int key = arr[i];
+int j = i - 1;
+
+//Move elements of arr[0..i-1], that are greater than key to one position ahead of their current
+position
+while (j >= 0 && arr[j] > key)
+{
+nbComp++; //Increment comparison count
+arr[j + 1] = arr[j];
+nbPerm++; //Increment permutation count
+j--;
+}
+nbComp++; //Increment for the last comparison when the while loop exits
+arr[j + 1] = key;
+nbPerm++; //Increment for the final placement of the key
+
+//Display the current state of the array
+printf("Iteration %d: ", i);
+displayArray(arr, size);
+
+}
+}
+
+//Partitioning Function For the Quick Sort:
+int partition(int arr[], int low, int high)
+{
+int pivot = arr[high];
+int i = (low - 1);
+
+for (int j = low; j < high; j++)
+{
+nbComp++;
+if (arr[j] < pivot)
+{
+i++;
+//Swap arr[i] and arr[j]
+int temp = arr[i];
+arr[i] = arr[j];
+arr[j] = temp;
+nbPerm++;
+}
+}
+
+//Swap arr[i + 1] and arr[high] (or pivot)
+int temp = arr[i + 1];
+arr[i + 1] = arr[high];
+arr[high] = temp;
+nbPerm++;
+
+return (i + 1);
+}
+
+//Quick Sort Function:
+void quickSort(int arr[], int low, int high)
+
+{
+if (low < high)
+{
+int pi = partition(arr, low, high);
+
+//Display the array after each partitioning
+displayArray(arr, high + 1);
+
+quickSort(arr, low, pi - 1);
+quickSort(arr, pi + 1, high);
+}
+}
+
+//Merge Function:
+void merge(int arr[], int left, int mid, int right)
+{
+int i, j, k;
+int n1 = mid - left + 1;
+int n2 = right - mid;
+
+int L[n1], R[n2];
+
+for (i = 0; i < n1; i++)
+{
+L[i] = arr[left + i];
+}
+
+for (j = 0; j < n2; j++)
+{
+R[j] = arr[mid + 1 + j];
+}
+
+i = 0;
+j = 0;
+
+k = left;
+
+while (i < n1 && j < n2)
+{
+nbComp++;
+
+if (L[i] <= R[j])
+{
+arr[k] = L[i];
+i++;
+} else
+{
+arr[k] = R[j];
+j++;
+}
+
+nbPerm++;
+k++;
+}
+
+while (i < n1)
+{
+arr[k] = L[i];
+i++;
+k++;
+nbPerm++;
+}
+
+while (j < n2)
+{
+arr[k] = R[j];
+j++;
+k++;
+nbPerm++;
+
+}
+
+//Display the current state of the array after merging
+displayArray(arr, right + 1);
+}
+
+//Merge Sort Function:
+void mergeSort(int arr[], int left, int right)
+{
+if (left < right)
+{
+int mid = left + (right - left) / 2;
+
+mergeSort(arr, left, mid);
+mergeSort(arr, mid + 1, right);
+merge(arr, left, mid, right);
+}
+}
+
+//Comb Sort Function:
+void combSort(int arr[], int size)
+{
+int gap = size;
+int swapped = 1;
+
+while (gap != 1 || swapped)
+{
+gap = (gap * 10) / 13; //Shrink the gap
+if (gap < 1)
+{
+gap = 1;
+}
+
+swapped = 0;
+
+for (int i = 0; i < size - gap; i++)
+{
+nbComp++; //Increment comparison count
+if (arr[i] > arr[i + gap])
+{
+//Swap the elements
+int temp = arr[i];
+arr[i] = arr[i + gap];
+arr[i + gap] = temp;
+nbPerm++; //Increment permutation count
+swapped = 1;
+}
+}
+
+//Display the current state of the array
+printf("Current array state: ");
+displayArray(arr, size);
+}
+}
+
+//Bubble Sort for the matrix:
+void bubbleSortForMatrix(char matrix[MAX_ROWS][MAX_COLS], int rows)
+{
+for (int i = 0; i < rows - 1; i++)
+{
+for (int j = 0; j < rows - i - 1; j++)
+{
+nbComp++;
+if (strcmp(matrix[j], matrix[j + 1]) > 0)
+{
+char temp[MAX_COLS];
+strcpy(temp, matrix[j]);
+strcpy(matrix[j], matrix[j + 1]);
+
+strcpy(matrix[j + 1], temp);
+nbPerm++;
+}
+displayMatrix(matrix, rows);
+}
+}
+}
+
+void mergeForMatrix(char matrix[MAX_ROWS][MAX_COLS], int left, int mid, int right)
+{
+int i, j, k;
+int n1 = mid - left + 1;
+int n2 = right - mid;
+
+char L[n1][MAX_COLS], R[n2][MAX_COLS];
+
+for (i = 0; i < n1; i++)
+{
+strcpy(L[i], matrix[left + i]);
+}
+for (j = 0; j < n2; j++)
+{
+strcpy(R[j], matrix[mid + 1 + j]);
+}
+
+i = 0;
+j = 0;
+k = left;
+
+while (i < n1 && j < n2)
+{
+nbComp++;
+if (strcmp(L[i], R[j]) <= 0)
+{
+
+strcpy(matrix[k], L[i]);
+i++;
+} else
+{
+strcpy(matrix[k], R[j]);
+j++;
+}
+k++;
+nbPerm++;
+}
+
+while (i < n1)
+{
+strcpy(matrix[k], L[i]);
+i++;
+k++;
+nbPerm++;
+}
+
+while (j < n2)
+{
+strcpy(matrix[k], R[j]);
+j++;
+k++;
+nbPerm++;
+}
+}
+
+//Merge Sort Function for a Matrix:
+void mergeSortMatrix(char matrix[MAX_ROWS][MAX_COLS], int left, int right)
+{
+if (left < right)
+{
+int mid = left + (right - left) / 2;
+
+mergeSortMatrix(matrix, left, mid);
+mergeSortMatrix(matrix, mid + 1, right);
+mergeForMatrix(matrix, left, mid, right);
+displayMatrix(matrix, right + 1);
+}
+}
+
+//Insertion Sort for a Linked List:
+void insertionSortForLinkedList(Node** head)
+{
+Node* sorted = NULL;
+Node* current = *head;
+
+while (current != NULL)
+{
+Node* next = current->next;
+if (sorted == NULL || strcmp(sorted->word, current->word) >= 0)
+{
+current->next = sorted;
+sorted = current;
+} else
+{
+Node* temp = sorted;
+while (temp->next != NULL && strcmp(temp->next->word, current->word) < 0)
+{
+nbComp++;
+temp = temp->next;
+}
+
+nbComp++;
+current->next = temp->next;
+temp->next = current;
+}
+
+nbPerm++;
+*head = sorted;
+displayList(*head);
+current = next;
+}
+}
+
+//Bubble Sort For a Linked List:
+void bubbleSortForLinkedList(Node** head)
+{
+if (*head == NULL) return;
+int swapped;
+Node* ptr1;
+Node* lptr = NULL;
+
+do
+{
+swapped = 0;
+ptr1 = *head;
+
+while (ptr1->next != lptr)
+{
+nbComp++;
+if (strcmp(ptr1->word, ptr1->next->word) > 0)
+{
+char temp[100];
+strcpy(temp, ptr1->word);
+strcpy(ptr1->word, ptr1->next->word);
+strcpy(ptr1->next->word, temp);
+swapped = 1;
+nbPerm++;
+}
+ptr1 = ptr1->next;
+
+}
+lptr = ptr1;
+displayList(*head);
+} while (swapped);
+}
+#endif
+
+#include "Code.h"
+
+void testArraySorting()
+{
+int size;
+printf("Choose array size (10, 20, 50, 100, 200, 500, 1000): ");
+scanf("%d", &size);
+
+//Create array with random values
+int arr[size];
+for (int i = 0; i < size; i++)
+{
+arr[i] = rand() % 100; //Random numbers between 0 and 99
+}
+
+printf("Array before sorting: ");
+displayArray(arr, size);
+
+int choice;
+printf("Choose sorting algorithm:\n");
+printf("1. Selection Sort\n");
+printf("2. Bubble Sort\n");
+printf("3. Insertion Sort\n");
+printf("4. Quick Sort\n");
+printf("5. Merge Sort\n");
+printf("6. Comb Sort\n");
+
+printf("Enter choice: ");
+scanf("%d", &choice);
+
+//Apply chosen sorting algorithm
+switch (choice) {
+case 1:
+selectionSort(arr, size);
+break;
+case 2:
+bubbleSort(arr, size);
+break;
+case 3:
+insertionSort(arr, size);
+break;
+case 4:
+quickSort(arr, 0, size - 1);
+break;
+case 5:
+mergeSort(arr, 0, size - 1);
+break;
+case 6:
+combSort(arr, size);
+break;
+default:
+printf("Invalid choice\n");
+return;
+}
+
+printf("Array after sorting: ");
+displayArray(arr, size);
+printf("Total comparisons: %.2lf\n", nbComp);
+printf("Total permutations: %.2lf\n", nbPerm);
+}
+
+void testLinkedListSorting()
+{
+//Create linked list with random words
+Node* head = NULL;
+char words[5][100] = {"apple", "banana", "cherry", "date", "strawberry"};
+for (int i = 0; i < 5; i++) {
+insertEnd(&head, words[rand() % 5]); //Insert random word
+}
+
+printf("Linked list before sorting: ");
+displayList(head);
+
+int choice;
+printf("Choose sorting algorithm:\n");
+printf("1. Insertion Sort\n");
+printf("2. Bubble Sort\n");
+printf("Enter choice: ");
+scanf("%d", &choice);
+
+//Apply chosen sorting algorithm
+switch (choice)
+{
+case 1:
+insertionSortForLinkedList(&head);
+break;
+case 2:
+bubbleSortForLinkedList(&head);
+break;
+default:
+printf("Invalid choice\n");
+return;
+}
+
+printf("Linked list after sorting: ");
+
+displayList(head);
+printf("Total comparisons: %.2lf\n", nbComp);
+printf("Total permutations: %.2lf\n", nbPerm);
+}
+
+void testMatrixSorting()
+{
+//Create matrix of strings
+char matrix[MAX_ROWS][MAX_COLS];
+for (int i = 0; i < MAX_ROWS; i++)
+{
+for (int j = 0; j < MAX_COLS - 1; j++)
+{
+matrix[i][j] = 'a' + rand() % 26; //Random characters between 'a' and 'z'
+}
+matrix[i][MAX_COLS - 1] = '\0'; //Null terminate the string
+}
+
+printf("Matrix before sorting:\n");
+displayMatrix(matrix, MAX_ROWS);
+
+int choice;
+printf("Choose sorting algorithm:\n");
+printf("1. Bubble Sort\n");
+printf("2. Merge Sort\n");
+printf("Enter choice: ");
+scanf("%d", &choice);
+
+//Apply chosen sorting algorithm
+switch (choice)
+{
+case 1:
+bubbleSortForMatrix(matrix, MAX_ROWS);
+break;
+
+case 2:
+mergeSortMatrix(matrix, 0, MAX_ROWS - 1);
+break;
+default:
+printf("Invalid choice\n");
+return;
+}
+
+printf("Matrix after sorting:\n");
+displayMatrix(matrix, MAX_ROWS);
+printf("Total comparisons: %.2lf\n", nbComp);
+printf("Total permutations: %.2lf\n", nbPerm);
+}
+
+int main()
+{
+int choice;
+while (1) {
+printf("\nChoose a data structure to test:\n");
+printf("1. Array\n");
+printf("2. Linked List\n");
+printf("3. Matrix\n");
+printf("4. Exit\n");
+printf("Enter choice: ");
+scanf("%d", &choice);
+
+switch (choice)
+{
+case 1:
+testArraySorting();
+break;
+case 2:
+testLinkedListSorting();
+break;
+
+case 3:
+testMatrixSorting();
+break;
+case 4:
+printf("Exiting program.\n");
+return 0;
+default:
+printf("Invalid choice. Please try again.\n");
+break;
+}
+}
+}
